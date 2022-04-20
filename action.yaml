@@ -59,11 +59,10 @@ runs:
               if bool(re.match(r"^(\d+\.)?(\d+\.)?(\*|\d+)$", chunk)):
                 return chunk
 
-          print("No tag found in PR body!")
-
         pr_data = os.getenv("PR_DATA", None)
         if not pr_data:
           print("No PR JSON data given!")
+          print("::error title=Input error::No PR JSON data given.")
           exit(1)
 
         pr_data = json.loads(pr_data)
@@ -72,14 +71,18 @@ runs:
 
         if tag:
           print("Tag detected:", tag)
+          print(f"::notice title=Tag detected::The tag {tag} has been detected on the PR body".)
           set_output("tag", tag)
         else:
           print("No tag detected on PR body")
+          print("::notice title=No tag detected::No tag has been detected on the PR body".)
 
     - name: Debug No PushTag
       if: steps.tag.outputs.tag && inputs.push-tag != 'true'
       shell: bash
-      run: echo "Not pushing detected tag"
+      run: |-
+        echo "Not pushing detected tag"
+        echo "::notice title=Not pushing detected tag::A tag has been detected, but it will not be pushed"
     - name: Tag commit
       if: steps.tag.outputs.tag && inputs.push-tag == 'true'
       uses: tvdias/github-tagger@v0.0.1
