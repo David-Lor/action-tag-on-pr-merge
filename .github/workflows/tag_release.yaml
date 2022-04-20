@@ -14,9 +14,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Run Action
-        id: prueba-action
-        uses: David-Lor/pruebas-workflows@action-release
+        id: action
+        uses: ./action.yaml
         with:
           github-token: ${{ secrets.GH_TOKEN }}
       - name: Print fetched tag
-        run: echo "${{ steps.prueba-action.outputs.tag }}"
+        run: echo "${{ steps.action.outputs.tag }}"
