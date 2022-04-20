@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v1
       - name: Run Action
         id: action
-        uses: ./action.yaml
+        uses: ./
         with:
           github-token: ${{ secrets.GH_TOKEN }}
       - name: Print fetched tag
