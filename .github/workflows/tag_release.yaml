@@ -1,0 +1,22 @@
+name: "Tag on Pull Request merge"
+on:
+  # Should trigger only when a Pull Request is Closed
+  # (the action will not create the Tag if the Pull Request is discarded - closed without merge)
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  TagOnPR:
+    name: Tag on Pull Request merge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Run Action
+        id: prueba-action
+        uses: David-Lor/pruebas-workflows@action-release
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+      - name: Print fetched tag
+        run: echo "${{ steps.prueba-action.outputs.tag }}"

@@ -1,0 +1,88 @@
+name: Tag on Pull Request merge
+description: Create a Tag when a Pull Request is merged
+inputs:
+  github-token:
+    description: Github Token for fetching Pull Request data
+    required: true
+    default: ${{ github.token }}
+  push-tag:
+    description: Push tag? (true/false)
+    required: false
+    default: 'true'
+outputs:
+  tag:
+    description: Detected tag
+    value: ${{ steps.tag.outputs.tag }}
+runs:
+  using: composite
+  steps:
+    - name: Get Pull Request data
+      id: pr
+      uses: 8BitJonny/gh-get-current-pr@8c3722a9680a5da47bfcdc37cb3aa5efaa17830e
+      with:
+        github-token: ${{ inputs.github-token }}
+        filterOutClosed: false
+    - name: Conditional IsPullRequest
+      if: steps.pr.outputs.number && steps.pr.outputs.pr
+      id: ispr
+      shell: bash
+      run: echo "::set-output name=ok::1"
+    - name: Debug Not IsPullRequest
+      if: steps.ispr.outputs.ok != 1
+      shell: bash
+      run: echo "No Pull Request detected"
+
+    - name: Fetch tag
+      id: tag
+      if: steps.ispr.outputs.ok == 1
+      shell: python
+      env:
+        PR_DATA: ${{ steps.pr.outputs.pr }}
+      run: |-
+        import os
+        import re
+        import json
+
+        def set_output(k, v):
+          s = f"::set-output name={k}::{v}"
+          print("Set output:", s)
+          print(s)
+
+        def extract_tag(_pr_body):
+          for line in _pr_body.splitlines():
+            line = line.strip().lower()
+            if not line.startswith("tag ") and not line.startswith("tags "):
+              continue
+        
+            for chunk in line.split():
+              chunk = chunk.strip()
+              if bool(re.match(r"^(\d+\.)?(\d+\.)?(\*|\d+)$", chunk)):
+                return chunk
+
+          print("No tag found in PR body!")
+
+        pr_data = os.getenv("PR_DATA", None)
+        if not pr_data:
+          print("No PR JSON data given!")
+          exit(1)
+
+        pr_data = json.loads(pr_data)
+        pr_body = pr_data["body"]
+        tag = extract_tag(pr_body)
+
+        if tag:
+          print("Tag detected:", tag)
+          set_output("tag", tag)
+        else:
+          print("No tag detected on PR body")
+
+    - name: Debug No PushTag
+      if: steps.tag.outputs.tag && inputs.push-tag != 'true'
+      shell: bash
+      run: echo "Not pushing detected tag"
+    - name: Tag commit
+      if: steps.tag.outputs.tag && inputs.push-tag == 'true'
+      uses: tvdias/github-tagger@v0.0.1
+      with:
+        repo-token: ${{ inputs.github-token }}
+        tag: ${{ steps.tag.outputs.tag }}
