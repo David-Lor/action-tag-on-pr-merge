@@ -18,11 +18,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-      - name: List directory
-        run: ls -lah
+      - name: Get current directory
+        run: echo "CWD=$(pwd)" >> $GITHUB_ENV
       - name: Run Action
         id: action
-        uses: ${GITHUB_WORKSPACE}
+        uses: ${{ env.CWD }}
         with:
           github-token: ${{ secrets.PAT }}  # TODO use GITHUB_TOKEN on public repo
       - name: Print fetched tag
