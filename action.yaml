@@ -71,11 +71,11 @@ runs:
 
         if tag:
           print("Tag detected:", tag)
-          print(f"::notice title=Tag detected::The tag {tag} has been detected on the PR body".)
+          print(f"::notice title=Tag detected::The tag {tag} has been detected on the PR body.")
           set_output("tag", tag)
         else:
           print("No tag detected on PR body")
-          print("::notice title=No tag detected::No tag has been detected on the PR body".)
+          print("::notice title=No tag detected::No tag has been detected on the PR body.")
 
     - name: Debug No PushTag
       if: steps.tag.outputs.tag && inputs.push-tag != 'true'
