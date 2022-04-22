@@ -5,6 +5,7 @@ on:
   pull_request:
     types:
       - closed
+# TODO uncomment on public repo:
 #    branches:
 #      - main
 
@@ -18,8 +19,8 @@ jobs:
         uses: actions/checkout@v1
       - name: Run Action
         id: action
-        uses: ./action.yaml
+        uses: action.yaml
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
+          github-token: ${{ secrets.PAT }}  # TODO use GITHUB_TOKEN on public repo
       - name: Print fetched tag
         run: echo "${{ steps.action.outputs.tag }}"
