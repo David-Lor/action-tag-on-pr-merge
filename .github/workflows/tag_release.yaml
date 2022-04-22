@@ -22,7 +22,7 @@ jobs:
         run: ls -lah
       - name: Run Action
         id: action
-        uses: ./action.yaml
+        uses: .
         with:
           github-token: ${{ secrets.PAT }}  # TODO use GITHUB_TOKEN on public repo
       - name: Print fetched tag
