@@ -67,8 +67,8 @@ runs:
             tag_chunk = line_chunks[-1].strip()
             if not tag_chunk:
               return
-            if not _tag_regex or (_tag_regex and bool(re.match(_tag_regex)):
-              return chunk
+            if not _tag_regex or (_tag_regex and bool(re.match(_tag_regex))):
+              return tag_chunk
 
         tag_regex = os.getenv("TAG_REGEX", None)
         pr_data = os.getenv("PR_DATA", None)
