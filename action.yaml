@@ -9,6 +9,9 @@ inputs:
     description: Push tag? (true/false)
     required: false
     default: 'false'
+  tag-regex:
+    description: Regex for validating tags
+    required: false
 outputs:
   tag:
     description: Detected tag
@@ -38,6 +41,7 @@ runs:
       shell: python
       env:
         PR_DATA: ${{ steps.pr.outputs.pr }}
+        TAG_REGEX: ${{ inputs.tag-regex }}
       run: |-
         import os
         import re
@@ -48,17 +52,25 @@ runs:
           print("Set output:", s)
           print(s)
 
-        def extract_tag(_pr_body):
+        def extract_tag(_pr_body, _tag_regex):
           for line in _pr_body.splitlines():
+            line = line.strip()
+            line_lower = line.lower()
             line = line.strip().lower()
-            if not line.startswith("tag ") and not line.startswith("tags "):
+            if not line_lower.startswith("tag ") and not line_lower.startswith("tags "):
               continue
-        
-            for chunk in line.split():
-              chunk = chunk.strip()
-              if bool(re.match(r"^(\d+\.)?(\d+\.)?(\*|\d+)$", chunk)):
-                return chunk
 
+            line_chunks = line.split()
+            if not len(line_chunks) == 2:
+              continue
+
+            tag_chunk = line_chunks[-1].strip()
+            if not tag_chunk:
+              return
+            if not _tag_regex or (_tag_regex and bool(re.match(_tag_regex)):
+              return chunk
+
+        tag_regex = os.getenv("TAG_REGEX", None)
         pr_data = os.getenv("PR_DATA", None)
         if not pr_data:
           print("No PR JSON data given!")
@@ -67,7 +79,7 @@ runs:
 
         pr_data = json.loads(pr_data)
         pr_body = pr_data["body"]
-        tag = extract_tag(pr_body)
+        tag = extract_tag(pr_body, tag_regex)
 
         if tag:
           print("Tag detected:", tag)
