@@ -78,7 +78,7 @@ runs:
           exit(1)
 
         pr_data = json.loads(pr_data)
-        pr_body = pr_data["body"]
+        pr_body = pr_data.get("body") or ""
         tag = extract_tag(pr_body, tag_regex)
 
         if tag:
