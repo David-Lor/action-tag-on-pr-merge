@@ -22,5 +22,7 @@ jobs:
         uses: ./
         with:
           github-token: ${{ secrets.PAT }}  # TODO use GITHUB_TOKEN on public repo
+          push-tag: true
+          tag-regex: ^(\d+\.)?(\d+\.)?(\*|\d+)$
       - name: Print fetched tag
         run: echo "${{ steps.action.outputs.tag }}"
