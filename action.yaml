@@ -1,5 +1,6 @@
 name: Tag on Pull Request merge
 description: Create a Tag when a Pull Request is merged
+
 inputs:
   github-token:
     description: Github Token for fetching Pull Request data
@@ -12,10 +13,12 @@ inputs:
   tag-regex:
     description: Regex for validating tags
     required: false
+
 outputs:
   tag:
     description: Detected tag
     value: ${{ steps.tag.outputs.tag }}
+
 runs:
   using: composite
   steps:
@@ -24,7 +27,7 @@ runs:
       uses: 8BitJonny/gh-get-current-pr@8c3722a9680a5da47bfcdc37cb3aa5efaa17830e
       with:
         github-token: ${{ inputs.github-token }}
-        filterOutClosed: false
+        filterOutClosed: false  # only detect merged closed PRs
     - name: Conditional IsPullRequest
       if: steps.pr.outputs.number && steps.pr.outputs.pr
       id: ispr
@@ -33,7 +36,7 @@ runs:
     - name: Debug Not IsPullRequest
       if: steps.ispr.outputs.ok != 1
       shell: bash
-      run: echo "No Pull Request detected"
+      run: echo "::warning title=No Pull Request detected::The action did not find a Pull Request associated to the workflow trigger."
 
     - name: Fetch tag
       id: tag
@@ -95,7 +98,8 @@ runs:
       run: |-
         echo "Not pushing detected tag"
         echo "::notice title=Not pushing detected tag::A tag has been detected, but it will not be pushed"
-    - name: Tag commit
+
+    - name: Push tag
       if: steps.tag.outputs.tag && inputs.push-tag == 'true'
       uses: tvdias/github-tagger@v0.0.1
       with:
