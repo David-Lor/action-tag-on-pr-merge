@@ -4,7 +4,7 @@ A GitHub Action that creates a new Tag on the repository, when a Pull Request (w
 
 ## Usage
 
-Your repo must contain a workflow that is triggered when a pull request is closed against your main branch. This workflow must do a repository checkout, then run the "Tag on Pull Request" action (you can find an example workflow [here](.github/workflows/tag_release.yaml)).
+Your repo must contain a workflow that is triggered when a pull request is closed against your main branch. This workflow must run the "Tag on Pull Request" action (you can find an example workflow [here](.github/workflows/tag_release.yaml)).
 
 Your Pull Request body must contain a line equal to: `Tags {NewTag}` (example: `Tags 1.25.3`).
 The tag format can be validated using a regex (see Action input below).
