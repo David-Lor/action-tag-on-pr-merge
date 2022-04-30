@@ -7,12 +7,13 @@ on:
       - closed
     branches:
       - main
+      - test/workflow-pr-closed-without-if
 
 jobs:
   TagOnPR:
     name: Tag on Pull Request merge
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+#    if: github.event.pull_request.merged == true
     steps:
       - name: Checkout
         uses: actions/checkout@v1
