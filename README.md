@@ -38,3 +38,15 @@ The tag supports the three existing merge strategies:
 | Name  | Description                             |
 |-------|-----------------------------------------|
 | `tag` | Detected tag (empty if no tag detected) |
+
+## Changelog
+
+- 0.0.1
+  - Initial release, supporting:
+    - Single tag detection on body of merged Pull Requests
+    - Configurable push of detected tag
+    - Configurable tag regex filter
+
+## TODO
+
+- Support detecting and pushing multiple tags
