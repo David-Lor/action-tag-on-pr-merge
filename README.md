@@ -13,6 +13,14 @@ The merge commit on the base branch will be tagged with the tag specified on the
 The `Tags` word can be singular (`Tag`), and also be lowercase.
 This action supports defining just a single tag per PR (the first detected tag on the PR body will be used).
 
+The tag supports the three existing merge strategies:
+
+| Merge strategy | Where tag is created |
+|----------------|----------------------|
+| Merge          | Merge commit         |
+| Squash         | Squashed commit      |
+| Rebase         | Last commit rebased  |
+
 ## Action inputs
 
 | Name           | Description                           | Default                                                                                                                               |
