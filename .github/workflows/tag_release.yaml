@@ -16,8 +16,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-      - name: Run Action
-        id: action
+      - name: Tag on PR merge
+        id: tag-on-pr-merge
         uses: David-Lor/action-tag-on-pr-merge@main
+        with:
+          push-tag: true
       - name: Print fetched tag
-        run: echo "${{ steps.action.outputs.tag }}"
+        run: echo "${{ steps.tag-on-pr-merge.outputs.tag }}"
