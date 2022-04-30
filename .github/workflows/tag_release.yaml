@@ -12,6 +12,8 @@ jobs:
   TagOnPR:
     name: Tag on Pull Request merge
     runs-on: ubuntu-latest
+    # This 'if' condition is important for ensuring the workflow only runs for merged PRs
+    #  (avoid running when a PR is discarded - closed without merging)
     if: github.event.pull_request.merged == true
     steps:
       - name: Tag on PR merge
