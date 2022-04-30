@@ -1,0 +1,107 @@
+name: Tag on Pull Request merge
+description: Create a Tag when a Pull Request is merged
+
+inputs:
+  github-token:
+    description: Github Token for fetching Pull Request data
+    required: true
+    default: ${{ github.token }}
+  push-tag:
+    description: Push tag? (true/false)
+    required: false
+    default: 'false'
+  tag-regex:
+    description: Regex for validating tags
+    required: false
+
+outputs:
+  tag:
+    description: Detected tag
+    value: ${{ steps.tag.outputs.tag }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get Pull Request data
+      id: pr
+      uses: 8BitJonny/gh-get-current-pr@8c3722a9680a5da47bfcdc37cb3aa5efaa17830e
+      with:
+        github-token: ${{ inputs.github-token }}
+        filterOutClosed: false  # only detect merged closed PRs
+    - name: Conditional IsPullRequest
+      if: steps.pr.outputs.number && steps.pr.outputs.pr
+      id: ispr
+      shell: bash
+      run: echo "::set-output name=ok::1"
+    - name: Debug Not IsPullRequest
+      if: steps.ispr.outputs.ok != 1
+      shell: bash
+      run: echo "::warning title=No Pull Request detected::The action did not find a Pull Request associated to the workflow trigger."
+
+    - name: Fetch tag
+      id: tag
+      if: steps.ispr.outputs.ok == 1
+      shell: python
+      env:
+        PR_DATA: ${{ steps.pr.outputs.pr }}
+        TAG_REGEX: ${{ inputs.tag-regex }}
+      run: |-
+        import os
+        import re
+        import json
+
+        def set_output(k, v):
+          s = f"::set-output name={k}::{v}"
+          print("Set output:", s)
+          print(s)
+
+        def extract_tag(_pr_body, _tag_regex):
+          for line in _pr_body.splitlines():
+            line = line.strip()
+            line_lower = line.lower()
+            line = line.strip().lower()
+            if not line_lower.startswith("tag ") and not line_lower.startswith("tags "):
+              continue
+
+            line_chunks = line.split()
+            if not len(line_chunks) == 2:
+              continue
+
+            tag_chunk = line_chunks[-1].strip()
+            if not tag_chunk:
+              return
+            if not _tag_regex or (_tag_regex and bool(re.match(_tag_regex, tag_chunk))):
+              return tag_chunk
+
+        tag_regex = os.getenv("TAG_REGEX", None)
+        pr_data = os.getenv("PR_DATA", None)
+        if not pr_data:
+          print("No PR JSON data given!")
+          print("::error title=Input error::No PR JSON data given.")
+          exit(1)
+
+        pr_data = json.loads(pr_data)
+        pr_body = pr_data.get("body") or ""
+        tag = extract_tag(pr_body, tag_regex)
+
+        if tag:
+          print("Tag detected:", tag)
+          print(f"::notice title=Tag detected::The tag {tag} has been detected on the PR body.")
+          set_output("tag", tag)
+        else:
+          print("No tag detected on PR body")
+          print("::notice title=No tag detected::No tag has been detected on the PR body.")
+
+    - name: Debug No PushTag
+      if: steps.tag.outputs.tag && inputs.push-tag != 'true'
+      shell: bash
+      run: |-
+        echo "Not pushing detected tag"
+        echo "::notice title=Not pushing detected tag::A tag has been detected, but it will not be pushed"
+
+    - name: Push tag
+      if: steps.tag.outputs.tag && inputs.push-tag == 'true'
+      uses: tvdias/github-tagger@v0.0.1
+      with:
+        repo-token: ${{ inputs.github-token }}
+        tag: ${{ steps.tag.outputs.tag }}
