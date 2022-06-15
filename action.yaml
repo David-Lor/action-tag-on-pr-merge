@@ -13,6 +13,9 @@ inputs:
   tag-regex:
     description: Regex for validating tags
     required: false
+  pr-sha:
+    description: SHA of the Pull Request, required if the workflow trigger event is not a commit
+    required: false
 
 outputs:
   tag:
@@ -27,7 +30,7 @@ runs:
       uses: 8BitJonny/gh-get-current-pr@8c3722a9680a5da47bfcdc37cb3aa5efaa17830e
       with:
         github-token: ${{ inputs.github-token }}
-        filterOutClosed: false  # only detect closed PRs
+        sha: ${{ inputs.pr-sha }}
     - name: Conditional IsPullRequest
       if: steps.pr.outputs.number && steps.pr.outputs.pr
       id: ispr
