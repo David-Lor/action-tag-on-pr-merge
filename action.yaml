@@ -24,7 +24,7 @@ runs:
   steps:
     - name: Get Pull Request data
       id: pr
-      uses: 8BitJonny/gh-get-current-pr@8c3722a9680a5da47bfcdc37cb3aa5efaa17830e
+      uses: 8BitJonny/gh-get-current-pr@3.0.0
       with:
         github-token: ${{ inputs.github-token }}
         filterOutClosed: false  # only detect merged closed PRs
