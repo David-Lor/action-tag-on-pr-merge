@@ -38,9 +38,6 @@ runs:
       shell: bash
       run: echo "::warning title=No Pull Request detected::The action did not find a Pull Request associated to the workflow trigger."
 
-    - name: Install gha-utils
-      run: pip install github-action-utils
-      shell: bash
     - name: Fetch tag
       id: tag
       if: steps.ispr.outputs.ok == 1
@@ -57,7 +54,8 @@ runs:
         def set_output(k, v):
           s = f"{k}={v}"
           print("Set output:", s)
-          gha.set_output(k, v)
+          with open(os.environ["GITHUB_OUTPUT"], "ab") as f:
+            f.write(s)
 
         def extract_tag(_pr_body, _tag_regex):
           for line in _pr_body.splitlines():
