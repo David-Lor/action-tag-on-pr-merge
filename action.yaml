@@ -49,7 +49,6 @@ runs:
         import os
         import re
         import json
-        import github_action_utils as gha
 
         def set_output(k, v):
           s = f"{k}={v}"
