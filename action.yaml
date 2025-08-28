@@ -40,6 +40,7 @@ runs:
 
     - name: Install gha-utils
       run: pip install github-action-utils
+      shell: bash
     - name: Fetch tag
       id: tag
       if: steps.ispr.outputs.ok == 1
