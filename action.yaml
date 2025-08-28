@@ -32,12 +32,14 @@ runs:
       if: steps.pr.outputs.number && steps.pr.outputs.pr
       id: ispr
       shell: bash
-      run: echo "::set-output name=ok::1"
+      run: echo "ok=1" >> $GITHUB_OUTPUT
     - name: Debug Not IsPullRequest
       if: steps.ispr.outputs.ok != 1
       shell: bash
       run: echo "::warning title=No Pull Request detected::The action did not find a Pull Request associated to the workflow trigger."
 
+    - name: Install gha-utils
+      run: pip install github-action-utils
     - name: Fetch tag
       id: tag
       if: steps.ispr.outputs.ok == 1
@@ -49,11 +51,12 @@ runs:
         import os
         import re
         import json
+        import github_action_utils as gha
 
         def set_output(k, v):
-          s = f"::set-output name={k}::{v}"
+          s = f"{k}={v}"
           print("Set output:", s)
-          print(s)
+          gha.set_output(k, v)
 
         def extract_tag(_pr_body, _tag_regex):
           for line in _pr_body.splitlines():
