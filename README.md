@@ -41,6 +41,8 @@ The tag supports the three existing merge strategies:
 
 ## Changelog
 
+- 0.0.2
+  - Replace deprecated set-output (#28)
 - 0.0.1
   - Initial release, supporting:
     - Single tag detection on body of merged Pull Requests
