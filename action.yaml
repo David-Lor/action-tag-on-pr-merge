@@ -24,7 +24,7 @@ runs:
   steps:
     - name: Get Pull Request data
       id: pr
-      uses: 8BitJonny/gh-get-current-pr@8c3722a9680a5da47bfcdc37cb3aa5efaa17830e
+      uses: 8BitJonny/gh-get-current-pr@3.0.0
       with:
         github-token: ${{ inputs.github-token }}
         filterOutClosed: false  # only detect merged closed PRs
@@ -32,7 +32,7 @@ runs:
       if: steps.pr.outputs.number && steps.pr.outputs.pr
       id: ispr
       shell: bash
-      run: echo "::set-output name=ok::1"
+      run: echo "ok=1" >> $GITHUB_OUTPUT
     - name: Debug Not IsPullRequest
       if: steps.ispr.outputs.ok != 1
       shell: bash
@@ -51,9 +51,10 @@ runs:
         import json
 
         def set_output(k, v):
-          s = f"::set-output name={k}::{v}"
+          s = f"{k}={v}"
           print("Set output:", s)
-          print(s)
+          with open(os.environ["GITHUB_OUTPUT"], "ab") as f:
+            f.write(s)
 
         def extract_tag(_pr_body, _tag_regex):
           for line in _pr_body.splitlines():
