@@ -53,7 +53,7 @@ runs:
         def set_output(k, v):
           s = f"{k}={v}"
           print("Set output:", s)
-          with open(os.environ["GITHUB_OUTPUT"], "ab") as f:
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
             f.write(s)
 
         def extract_tag(_pr_body, _tag_regex):

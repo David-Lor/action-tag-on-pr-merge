@@ -41,8 +41,10 @@ This action supports the three existing merge strategies:
 
 ## Changelog
 
+- 0.0.3
+  - Open GITHUB_OUTPUT as string ([#30](https://github.com/David-Lor/action-tag-on-pr-merge/pull/30))
 - 0.0.2
-  - Replace deprecated set-output (#28)
+  - Replace deprecated set-output ([#28](https://github.com/David-Lor/action-tag-on-pr-merge/pull/28))
 - 0.0.1
   - Initial release, supporting:
     - Single tag detection on body of merged Pull Requests
